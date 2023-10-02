@@ -1,0 +1,42 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Jogador {
+  id Int @id @default(autoincrement())
+  nome String @db.VarChar(100)
+  nascimento DateTime
+  confrontosEmJ1 Confronto[] @relation(name: "j1")
+  confrontosEmJ2 Confronto[] @relation(name: "j2")
+  @@map("jogador")
+}
+
+model Torneio {
+  id Int @id @default(autoincrement())
+  nome String @db.VarChar(50)
+  data DateTime
+  confrontos Confronto[]
+  @@map("torneio")  
+}
+
+model Confronto {
+  id Int @id @default(autoincrement())
+  pontuacaoJ1 Int @default(0)
+  pontuacaoJ2 Int @default(0)
+  jogador1 Jogador @relation(name: "j1", fields: [jogador1Id], references: [id])
+  jogador2 Jogador @relation(name: "j2", fields: [jogador2Id], references: [id])
+  jogador1Id Int
+  jogador2Id Int
+  torneio Torneio @relation(fields: [torneioId], references: [id])
+  torneioId Int
+  @@map("confronto")
+}
+
